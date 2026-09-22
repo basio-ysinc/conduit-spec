@@ -1,0 +1,8 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  check-upstream:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: ./scripts/check-upstream.sh
