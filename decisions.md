@@ -55,3 +55,19 @@ RealWorld 公式仕様(`api/openapi.yml`)が曖昧な点について、本プロ
 - `offset` の既定値 0(openapi.yml の `offsetParam` は `default` の規定なし)
 - JWT の署名方式・有効期限・鍵の管理(openapi.yml は「valid JWT token」と `Token` ヘッダ形式を規定するのみ)
 - slug の生成規則・衝突時の扱い・非 ASCII の扱い(openapi.yml は `slug: type: string` のみ)
+
+## 追加の決定(実装中に確定した項目)
+
+チケットの AC が「decisions.md に追記」と求めた項目は、conduit-api の worker は conduit-spec を編集できないため、人間がここに追記する。
+
+### profiles: 自分自身のフォロー
+
+- `POST /profiles/{username}/follow` で対象が認証ユーザー自身の場合は 422 を返す(`errors.profile: ["cannot follow yourself"]`)。仕様(openapi.yml)に規定が無いため本決定で規定する。`profiles.hurl` / `errors_profiles.hurl` は自己フォローを検証しない
+
+### tags: 一覧の並び順
+
+- `GET /tags` は記事に使われているタグだけを重複なく返し、並び順は使用数の降順、同数は名前の昇順とする。`tags.hurl` は並び順を検証しないため本決定で規定する
+
+### pagination: 範囲外の値(TBD-2 の再確認)
+
+- `limit` が 1 未満または 100 超過、`offset` が 0 未満のときは 422 を返す(上限への丸めはしない)。チケット RW-6 の AC にあった「上限に丸める」は本決定と矛盾するため、本決定を正とする
